@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    volumes:
+      - "./:/app"
+    depends_on:
+      mongo:
+        condition: service_healthy
+  
+  mongo:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: hhn
+    healthcheck:
+      test: ["CMD", "mongosh", "-u", "root", "-p", "hhn", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
