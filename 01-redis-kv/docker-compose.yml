@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    volumes:
+      - "./:/app"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:latest
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
