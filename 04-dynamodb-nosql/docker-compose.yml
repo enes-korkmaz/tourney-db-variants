@@ -1,0 +1,31 @@
+services:
+  app:
+    build: .
+    volumes:
+      - ./:/app
+    depends_on:
+      dynamo:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: dummyKeyId
+      AWS_SECRET_ACCESS_KEY: dummyKey
+      REGION: 'eu-west-1'
+
+  dynamo:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'if [ "$(curl -s -o /dev/null -I -w ''%{http_code}'' http://localhost:8000)" == "400" ]; then exit 0; else exit 1; fi',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
