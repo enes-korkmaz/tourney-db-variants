@@ -1,0 +1,24 @@
+services:
+  app:
+    build: .
+    volumes:
+      - ./:/app
+    depends_on:
+      neo:
+        condition: service_healthy
+
+  neo:
+    image: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/hello_neo
+    volumes:
+      - "./data:/data"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://0.0.0.0:7474"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s

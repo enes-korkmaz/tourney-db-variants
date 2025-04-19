@@ -1,0 +1,4 @@
+source 'https://rubygems.org/'
+
+gem 'async-io', '~> 1.31', '< 1.32'
+gem 'neo4j-ruby-driver'
